@@ -20,11 +20,11 @@ var NoteEditor = React.createClass({
         }
     },
     handleTextChange: function(e) {
-        this.setState({text: e.target.value});           
+            this.setState({text: e.target.value});
     },
 
     chooseColor: function(e) {
-            this.color =  e.target.value;
+        return this.color =  e.target.value;
     },
 
     handleNoteAdd: function() {
@@ -34,8 +34,12 @@ var NoteEditor = React.createClass({
             id: Date.now()
         };
 
-        this.props.onNoteAdd(newNote);
-        this.setState({text: ''});
+        if (newNote.text.trim().length > 0) {
+            this.props.onNoteAdd(newNote);
+            this.setState({text: ''});
+        } else {
+            return false;
+        }
     },
   
 
@@ -132,29 +136,55 @@ var NotesApp = React.createClass({
     handleNoteAdd: function(newNote) {
         var newNotes = this.state.notes.slice();
             newNotes.unshift(newNote);
-            this.setState({ notes: newNotes });
+            this.setState({
+                notes: newNotes
+            });
     },
 
-    handleSearch: function(e) {
+    startSearching: function(e) {
 
-        var searchItem = e.target.value.toLowerCase();
-        var newList = this.state.notes.slice();
+        var searchItem = e.target.value.trim().toLowerCase();
 
-            var displayedNotes = newList.filter(function(note) {
+        if (e.keyCode == 13) {
+
+            this.setState({
+                prevList: this.state.notes
+            });
+
+            var displayedNotes = this.state.notes.filter(function(note) {
                 var searchNote = note.text.toLowerCase();
                 return searchNote.indexOf(searchItem) !== -1;
             });
 
-            this.setState({
-                notes: displayedNotes
+            if ( displayedNotes.length ) {
+                this.setState({
+                    notes: displayedNotes,
+                    empty: false
+                });
+            } else {
+                this.setState({
+                    empty: true
+                });
+            }
+        }
+    },
+
+    handleNotesBack: function(e) {
+        if ( (e.target.value == "" ) && (this.state.prevList.length) ) {
+            this.setState(function() {
+                return {
+                    notes: this.state.prevList
+                }
             });
+        }
     },
 
     render: function() {
         return (
             <div className="notes-app">
                 <h2 className='app-header'>NotesApps</h2>
-                <input type="text" placeholder="Search..." className="search-field" onChange={this.handleSearch} />
+                <input type="text" placeholder="Search..." className="search-field" onKeyUp={this.startSearching} onChange={this.handleNotesBack} />
+                <p className={ this.state.empty ? 'show' : 'hide' }>Ничего не найдено</p>
                 <NoteEditor onNoteAdd={this.handleNoteAdd} />
                 <NotesGrid notes={this.state.notes} onNoteDelete={this.handleNoteDelete} />
             </div>

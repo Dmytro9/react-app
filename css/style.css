@@ -153,3 +153,11 @@ input[type='color' i] {
     width: 40px;
     border-radius: 6px;
 }
+p.hide {
+    display: none;
+}
+p.show {
+    display: block;
+    color: red;
+    text-align: center;
+}
