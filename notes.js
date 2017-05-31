@@ -135,7 +135,7 @@ var NotesApp = React.createClass({
             this.setState({ notes: newNotes });
     },
 
-    makeSearch: function(e) {
+    handleSearch: function(e) {
 
         var searchItem = e.target.value.toLowerCase();
         var newList = this.state.notes.slice();
@@ -154,7 +154,7 @@ var NotesApp = React.createClass({
         return (
             <div className="notes-app">
                 <h2 className='app-header'>NotesApps</h2>
-                <input type="text" placeholder="Search..." className="search-field" onChange={this.makeSearch} />
+                <input type="text" placeholder="Search..." className="search-field" onChange={this.handleSearch} />
                 <NoteEditor onNoteAdd={this.handleNoteAdd} />
                 <NotesGrid notes={this.state.notes} onNoteDelete={this.handleNoteDelete} />
             </div>
