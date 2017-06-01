@@ -4,9 +4,9 @@ var Note = React.createClass({
         var style = { backgroundColor: this.props.color };
         return (
             <div className="note" style={style}>
-                <span className="delete-note" onClick={this.props.onDelete}> × </span>    
-                {this.props.children}
-            </div>
+            <span className="delete-note" onClick={this.props.onDelete}> × </span>
+        {this.props.children}
+        </div>
         );
     }
 });
@@ -20,7 +20,7 @@ var NoteEditor = React.createClass({
         }
     },
     handleTextChange: function(e) {
-            this.setState({text: e.target.value});
+        this.setState({text: e.target.value});
     },
 
     chooseColor: function(e) {
@@ -41,21 +41,21 @@ var NoteEditor = React.createClass({
             return false;
         }
     },
-  
+
 
     render: function() {
         return (
             <div className="note-editor">
-               <textarea 
-                    placeholder='Enter your note here...' 
-                    rows={5} 
-                    className='textarea' 
-                    value={this.state.text}
-                    onChange={this.handleTextChange} 
-                />
-               <button className='add-button' onClick={this.handleNoteAdd}>Add</button>
-               <input type="color" onChange={this.chooseColor} />
-            </div>
+            <textarea
+        placeholder='Enter your note here...'
+        rows={5}
+        className='textarea'
+        value={this.state.text}
+        onChange={this.handleTextChange}
+        />
+        <button className='add-button' onClick={this.handleNoteAdd}>Add</button>
+        <input type="color" onChange={this.chooseColor} />
+        </div>
         );
     }
 });
@@ -66,10 +66,10 @@ var NotesGrid = React.createClass({
     componentDidMount: function() {
         var grid = this.refs.grid;
         this.msnry = new Masonry( grid, {
-           itemSelector: '.note',   
-           columnWidth: 200,
-           gutter: 10,
-           isFitWidth: true
+            itemSelector: '.note',
+            columnWidth: 200,
+            gutter: 10,
+            isFitWidth: true
         });
     },
 
@@ -81,24 +81,24 @@ var NotesGrid = React.createClass({
     },
 
     render: function() {
-        var onNoteDelete = this.props.onNoteDelete; 
+        var onNoteDelete = this.props.onNoteDelete;
 
         return (
             <div className="notes-grid" ref="grid">
-                {
-                    this.props.notes.map(function(note){
-                        return (
-                            <Note
-                                key={note.id}
-                                color={note.color}
-                                onDelete={onNoteDelete.bind(null, note)} >
-                                
-                                {note.text}
-                            </Note>
-                        );
-                    })
-                }
-            </div>
+            {
+                this.props.notes.map(function(note){
+                return (
+                    <Note
+                key={note.id}
+                color={note.color}
+                onDelete={onNoteDelete.bind(null, note)} >
+
+                {note.text}
+                </Note>
+                );
+            })
+    }
+        </div>
         );
     }
 });
@@ -112,7 +112,7 @@ var NotesApp = React.createClass({
             notes: []
         };
     },
-    
+
     componentDidMount: function() {
         var localNotes = JSON.parse(localStorage.getItem('notes'));
         if (localNotes) {
@@ -135,23 +135,30 @@ var NotesApp = React.createClass({
 
     handleNoteAdd: function(newNote) {
         var newNotes = this.state.notes.slice();
-            newNotes.unshift(newNote);
-            this.setState({
-                notes: newNotes
-            });
+        newNotes.unshift(newNote);
+        this.setState({
+            notes: newNotes
+        });
     },
 
     startSearching: function(e) {
+
+        if (e.keyCode != 13) {
+            var foo = [...this.state.notes];
+
+            this.setState({
+                foo: foo
+            });
+        }
+
+
+        var baz = this.state.notes.slice();
 
         var searchItem = e.target.value.trim().toLowerCase();
 
         if (e.keyCode == 13) {
 
-            this.setState({
-                prevList: this.state.notes
-            });
-
-            var displayedNotes = this.state.notes.filter(function(note) {
+            var displayedNotes = baz.filter(function(note) {
                 var searchNote = note.text.toLowerCase();
                 return searchNote.indexOf(searchItem) !== -1;
             });
@@ -166,31 +173,34 @@ var NotesApp = React.createClass({
                     empty: true
                 });
             }
+            console.log( this.state.foo );
         }
     },
 
     handleNotesBack: function(e) {
-        if ( (e.target.value == "" ) && (this.state.prevList.length) ) {
+        if ( e.target.value == "" ) {
             this.setState(function() {
                 return {
-                    notes: this.state.prevList
+                    notes: this.state.foo,
+                    empty: false
                 }
             });
+            console.log( this.state.foo );
         }
     },
 
     render: function() {
         return (
             <div className="notes-app">
-                <h2 className='app-header'>NotesApps</h2>
-                <input type="text" placeholder="Search..." className="search-field" onKeyUp={this.startSearching} onChange={this.handleNotesBack} />
-                <p className={ this.state.empty ? 'show' : 'hide' }>Ничего не найдено</p>
-                <NoteEditor onNoteAdd={this.handleNoteAdd} />
-                <NotesGrid notes={this.state.notes} onNoteDelete={this.handleNoteDelete} />
-            </div>
+            <h2 className='app-header'>NotesApps</h2>
+            <input type="text" placeholder="Search..." className="search-field" onKeyUp={this.startSearching} onChange={this.handleNotesBack} />
+        <p className={ this.state.empty ? 'show' : 'hide' }>Ничего не найдено</p>
+        <NoteEditor onNoteAdd={this.handleNoteAdd} />
+        <NotesGrid notes={this.state.notes} onNoteDelete={this.handleNoteDelete} />
+        </div>
         );
     },
-    
+
     _updateLocalStorage: function() {
         var notes = JSON.stringify(this.state.notes);
         localStorage.setItem('notes', notes);
@@ -201,6 +211,6 @@ var NotesApp = React.createClass({
 
 
 ReactDOM.render(
-    <NotesApp />,
+<NotesApp />,
     document.getElementById('mount-point')
 );
