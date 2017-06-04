@@ -1,4 +1,3 @@
-
 var Note = React.createClass({
     render: function() {
         var style = { backgroundColor: this.props.color };
@@ -10,7 +9,6 @@ var Note = React.createClass({
         );
     }
 });
-
 
 
 var NoteEditor = React.createClass({
@@ -109,14 +107,19 @@ var NotesGrid = React.createClass({
 var NotesApp = React.createClass({
     getInitialState: function() {
         return {
-            notes: []
+            notes: [],
+            currentNotes: []
         };
     },
 
     componentDidMount: function() {
         var localNotes = JSON.parse(localStorage.getItem('notes'));
-        if (localNotes) {
-            this.setState({ notes: localNotes });
+        var currentNotes = JSON.parse(localStorage.getItem('currentNotes'));
+        if (localNotes.length && currentNotes.length) {
+            this.setState({
+                notes: localNotes,
+                currentNotes: currentNotes
+            });
         }
     },
 
@@ -130,33 +133,26 @@ var NotesApp = React.createClass({
             return note.id !== noteId;
         });
 
-        this.setState({ notes: newNotes });
+        this.setState({
+            notes: newNotes,
+            currentNotes: newNotes
+        });
     },
 
     handleNoteAdd: function(newNote) {
         var newNotes = this.state.notes.slice();
         newNotes.unshift(newNote);
         this.setState({
-            notes: newNotes
+            notes: newNotes,
+            currentNotes: newNotes
         });
     },
 
     startSearching: function(e) {
 
-        if (e.keyCode != 13) {
-            var foo = [...this.state.notes];
-
-            this.setState({
-                foo: foo
-            });
-        }
-
-
-        var baz = this.state.notes.slice();
-
-        var searchItem = e.target.value.trim().toLowerCase();
-
         if (e.keyCode == 13) {
+            var baz = this.state.notes.slice(),
+                searchItem = e.target.value.trim().toLowerCase();
 
             var displayedNotes = baz.filter(function(note) {
                 var searchNote = note.text.toLowerCase();
@@ -173,19 +169,20 @@ var NotesApp = React.createClass({
                     empty: true
                 });
             }
-            console.log( this.state.foo );
         }
     },
 
     handleNotesBack: function(e) {
         if ( e.target.value == "" ) {
-            this.setState(function() {
-                return {
-                    notes: this.state.foo,
-                    empty: false
-                }
+
+            var curNotes = this.state.currentNotes.slice();
+
+                this.setState(function() {
+                    return {
+                        notes: curNotes,
+                        empty: false
+                    }
             });
-            console.log( this.state.foo );
         }
     },
 
@@ -202,8 +199,10 @@ var NotesApp = React.createClass({
     },
 
     _updateLocalStorage: function() {
-        var notes = JSON.stringify(this.state.notes);
+        var notes = JSON.stringify(this.state.notes),
+            currentNotes = JSON.stringify(this.state.currentNotes);
         localStorage.setItem('notes', notes);
+        localStorage.setItem('currentNotes', currentNotes);
     }
 
 });
