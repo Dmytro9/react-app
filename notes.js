@@ -26,6 +26,7 @@ var NoteEditor = React.createClass({
     },
 
     handleNoteAdd: function() {
+
         var newNote = {
             text: this.state.text,
             color: this.color,
@@ -44,16 +45,16 @@ var NoteEditor = React.createClass({
     render: function() {
         return (
             <div className="note-editor">
-            <textarea
-        placeholder='Enter your note here...'
-        rows={5}
-        className='textarea'
-        value={this.state.text}
-        onChange={this.handleTextChange}
-        />
-        <button className='add-button' onClick={this.handleNoteAdd}>Add</button>
-        <input type="color" onChange={this.chooseColor} />
-        </div>
+                <textarea
+                    placeholder='Enter your note here...'
+                    rows={5}
+                    className='textarea'
+                    value={this.state.text}
+                    onChange={this.handleTextChange}
+                />
+                <button className='add-button' onClick={this.handleNoteAdd}>Add</button>
+                <input type="color" onChange={this.chooseColor} />
+            </div>
         );
     }
 });
@@ -87,12 +88,12 @@ var NotesGrid = React.createClass({
                 this.props.notes.map(function(note){
                 return (
                     <Note
-                key={note.id}
-                color={note.color}
-                onDelete={onNoteDelete.bind(null, note)} >
-
-                {note.text}
-                </Note>
+                        key={note.id}
+                        color={note.color}
+                        onDelete={onNoteDelete.bind(null, note)}
+                    >
+                        {note.text}
+                    </Note>
                 );
             })
     }
@@ -100,6 +101,7 @@ var NotesGrid = React.createClass({
         );
     }
 });
+
 
 
 
@@ -113,8 +115,9 @@ var NotesApp = React.createClass({
     },
 
     componentDidMount: function() {
-        var localNotes = JSON.parse(localStorage.getItem('notes'));
-        var currentNotes = JSON.parse(localStorage.getItem('currentNotes'));
+        var localNotes = JSON.parse(localStorage.getItem('notes')),
+            currentNotes = JSON.parse(localStorage.getItem('currentNotes'));
+
         if (localNotes.length && currentNotes.length) {
             this.setState({
                 notes: localNotes,
@@ -189,20 +192,21 @@ var NotesApp = React.createClass({
     render: function() {
         return (
             <div className="notes-app">
-            <h2 className='app-header'>NotesApps</h2>
-            <input type="text" placeholder="Search..." className="search-field" onKeyUp={this.startSearching} onChange={this.handleNotesBack} />
-        <p className={ this.state.empty ? 'show' : 'hide' }>Ничего не найдено</p>
-        <NoteEditor onNoteAdd={this.handleNoteAdd} />
-        <NotesGrid notes={this.state.notes} onNoteDelete={this.handleNoteDelete} />
-        </div>
+                <h2 className='app-header'>NotesApps</h2>
+                <input type="text" placeholder="Search..." className="search-field" onKeyUp={this.startSearching} onChange={this.handleNotesBack} />
+                <p className={ this.state.empty ? 'show' : 'hide' }>Ничего не найдено</p>
+                <NoteEditor onNoteAdd={this.handleNoteAdd} />
+                <NotesGrid notes={this.state.notes} onNoteDelete={this.handleNoteDelete} />
+            </div>
         );
     },
 
     _updateLocalStorage: function() {
         var notes = JSON.stringify(this.state.notes),
             currentNotes = JSON.stringify(this.state.currentNotes);
-        localStorage.setItem('notes', notes);
-        localStorage.setItem('currentNotes', currentNotes);
+
+            localStorage.setItem('notes', notes);
+            localStorage.setItem('currentNotes', currentNotes);
     }
 
 });
@@ -213,3 +217,8 @@ ReactDOM.render(
 <NotesApp />,
     document.getElementById('mount-point')
 );
+
+
+
+
+
